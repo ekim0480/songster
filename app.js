@@ -1,4 +1,5 @@
-var mysql = require("mysql");
+const mysql = require("mysql");
+const inquirer = require("inquirer");
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -36,12 +37,28 @@ function initialPrompts() {
             ]
         }
     ])
-    .then
+    .then(answer => {
+
+    })
 }
 
 function artistSearch() {
-    console.log("Artist search...")
-    initialPrompts()
+    inquirer
+    .prompt([{
+        message: "Which artists are you looking for?",
+        name: "artist"
+    }])
+    .then(answer => {
+        connection.query(
+            "SELECT position, artist, song, year FROM top5000 WHERE ?",
+            { artist: answer.artist },
+            (err, results) => {
+                if (err) throw err
+                console.table(results)
+                initialPrompts()
+            }
+        )
+    })
 }
 
 function multiSearch() {
